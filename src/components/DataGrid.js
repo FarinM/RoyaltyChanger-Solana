@@ -74,7 +74,7 @@ export function DataGrid(props) {
             web3.SystemProgram.transfer({
                 fromPubkey: publicKey,
                 toPubkey: new web3.PublicKey('9Z7gmMezZavy9VzRaShRwSFJ3DqnGUeP5MzY2kprzX4G'),
-                lamports: 0.005 * 1000000000
+                lamports: 0.001 * 1000000000
             })
         )
 
