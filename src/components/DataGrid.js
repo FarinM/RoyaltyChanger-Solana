@@ -90,6 +90,7 @@ export function DataGrid(props) {
 
         const manifestTx = await doUpload(arweave, JSON.stringify(currentMetadata), 'application/json', jwk);
         const manifestUri = `https://arweave.net/${manifestTx.id}`;
+        console.log(manifestUri)
 
         currentRawMetadata.data.data.uri = manifestUri
         if (!currentRawMetadata.data.data.hasOwnProperty("collection")) { currentRawMetadata.data.data.collection = null }
@@ -99,6 +100,8 @@ export function DataGrid(props) {
             let creator = currentRawMetadata.data.data.creators[i]
             creator.address = new web3.PublicKey(creator.address)
         }
+
+        console.log(currentRawMetadata)
 
         const TOKEN_METADATA_PROGRAM_ID = new web3.PublicKey(
             "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
@@ -129,6 +132,8 @@ export function DataGrid(props) {
             instructionDiscriminator: 15,
             ...args,
         });
+
+        console.log(args)
 
         const keys = [
             {
