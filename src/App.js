@@ -15,6 +15,7 @@ import {
   TorusWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from "@solana/web3.js";
+import MyWallet from "./MyWallet";
 import InputBox from './components/InputBox'
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
@@ -24,12 +25,9 @@ function App() {
 
   return (
     <header className="App-header">
-      <div className="button-wrapper">
-        <Context>
-          <Content />
-        </Context>
-      </div>
-
+      <Context>
+        <Content />
+      </Context>
     </header>
   );
 }
@@ -64,7 +62,9 @@ const Context = ({ children }) => {
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>{children}</WalletModalProvider>
+        <div className="button-wrapper">
+          <WalletModalProvider>{children}</WalletModalProvider>
+        </div>
         <InputBox />
       </WalletProvider>
     </ConnectionProvider>
