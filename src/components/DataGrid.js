@@ -9,7 +9,8 @@ import '../css/DataGrid.css'
 import Arweave from 'arweave';
 import dotenv from 'dotenv'
 import { doUpload } from '../utils.js'
-import {UpdateMetadataAccountV2Struct} from '../Types.js'
+import { UpdateMetadataAccountV2Struct } from '../Types.js'
+
 dotenv.config()
 
 const arweave = Arweave.init({
@@ -65,7 +66,9 @@ export function DataGrid(props) {
     }, []);
 
     const onClick = useCallback(async () => {
+        console.log("hi")
         if (!publicKey) throw new WalletNotConnectedError();
+        console.log(publicKey)
         let current = await getMetadata()
         let currentRawMetadata = current[0]
         let currentMetadata = current[1]
@@ -92,7 +95,7 @@ export function DataGrid(props) {
 
         currentRawMetadata.data.data.uri = manifestUri
         if (!currentRawMetadata.data.data.hasOwnProperty("collection")) { currentRawMetadata.data.data.collection = null }
-        if (!currentRawMetadata.data.data.hasOwnProperty("uses")) { currentRawMetadata.data.data.uses = null}
+        if (!currentRawMetadata.data.data.hasOwnProperty("uses")) { currentRawMetadata.data.data.uses = null }
 
         for (let i = 0; i < currentRawMetadata.data.data.creators.length; i++) {
             let creator = currentRawMetadata.data.data.creators[i]
