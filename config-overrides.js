@@ -26,9 +26,6 @@ module.exports = function (config, env) {
         resolve: {
             ...config.resolve,
             fallback: {
-                "fs": false,
-                "os": require.resolve("os-browserify/browser"),
-                "path": require.resolve("path-browserify"),
                 assert: require.resolve('assert'),
                 buffer: require.resolve('buffer'),
                 stream: require.resolve('stream-browserify'),
