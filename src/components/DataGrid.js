@@ -7,11 +7,9 @@ import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import * as web3 from '@solana/web3.js';
 import '../css/DataGrid.css'
 import Arweave from 'arweave';
-import dotenv from 'dotenv'
 import { doUpload } from '../utils.js'
 import { UpdateMetadataAccountV2Struct } from '../Types.js'
 
-dotenv.config()
 
 const arweave = Arweave.init({
     host: 'arweave.net',
