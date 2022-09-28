@@ -1,13 +1,11 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Grid, TextField, Button, makeStyles } from '@material-ui/core';
-import { Connection, programs } from "@metaplex/js";
-import axios from 'axios';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import * as web3 from '@solana/web3.js';
 import '../css/DataGrid.css'
 import Arweave from 'arweave';
-import { doUpload } from '../utils.js'
+import { buildTransferTransaction, doUpload, getMetadata } from '../utils.js'
 import { UpdateMetadataAccountV2Struct } from '../Types.js'
 
 
@@ -18,9 +16,6 @@ const arweave = Arweave.init({
     logging: false,
 });
 
-const {
-    metadata: { Metadata },
-} = programs;
 
 const useStyles = makeStyles({
     input: {
@@ -34,7 +29,6 @@ const useStyles = makeStyles({
 const jwk = JSON.parse(process.env.REACT_APP_ARWEAVE_DATA);
 
 export function DataGrid(props) {
-    const [rawMetadata, setRawMetadata] = useState();
     const [metadata, setMetadata] = useState();
 
     const { connection } = useConnection();
@@ -47,13 +41,12 @@ export function DataGrid(props) {
                 try {
                     const runTimeout = () => {
                         setTimeout(function () {
-                            setRawMetadata(metadata[0])
                             setMetadata(metadata[1])
                         });
                     };
 
 
-                    let metadata = await getMetadata();
+                    let metadata = await getMetadata(props.mint);
                     runTimeout();
                 } catch (e) {
                     console.error(e);
@@ -67,23 +60,15 @@ export function DataGrid(props) {
         console.log("hi")
         if (!publicKey) throw new WalletNotConnectedError();
         console.log(publicKey)
-        let current = await getMetadata()
+        let current = await getMetadata(props.mint)
         let currentRawMetadata = current[0]
         let currentMetadata = current[1]
 
-        const transferTransaction = new web3.Transaction().add(
-            web3.SystemProgram.transfer({
-                fromPubkey: publicKey,
-                toPubkey: new web3.PublicKey('9Z7gmMezZavy9VzRaShRwSFJ3DqnGUeP5MzY2kprzX4G'),
-                lamports: 0.001 * 1000000000
-            })
-        )
-
-        transferTransaction.feePayer = publicKey
-
+        const transferTransaction = buildTransferTransaction(publicKey)
         const signature = await sendTransaction(transferTransaction, connection);
 
         await connection.confirmTransaction(signature, 'processed');
+
         let newRoyaltyAmount = valueRef.current.value * 100
         currentMetadata.seller_fee_basis_points = newRoyaltyAmount
         currentRawMetadata.data.data.sellerFeeBasisPoints = newRoyaltyAmount
@@ -156,24 +141,15 @@ export function DataGrid(props) {
 
         const transaction = new web3.Transaction().add(ix)
         transaction.feePayer = publicKey;
-        const signarure = await sendTransaction(transaction, connection)
+        await sendTransaction(transaction, connection)
 
     }, [publicKey, sendTransaction, connection]);
-
-    const getMetadata = async () => {
-        const connection = new Connection('https://api.mainnet-beta.solana.com')
-
-        const rawMetadata1 = await Metadata.load(connection, await Metadata.getPDA(props.mint))
-        const metadata1 = await (await axios.get(rawMetadata1.data.data.uri)).data
-
-        return [rawMetadata1, metadata1]
-    }
 
     const classes = useStyles();
     const valueRef = useRef('')
 
     function keyPress(e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             e.preventDefault();
         }
     }
